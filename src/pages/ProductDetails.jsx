@@ -2,10 +2,9 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { Button } from 'react-bootstrap'
 
-import {
-  getProductById,
-  deleteProduct
-} from '../api/fakeStoreApi'
+import { getProductById, deleteProduct } from '../api/products'
+import { useCart } from '../contexts/CartContext'
+import { useAuth } from '../contexts/AuthContext'
 
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal'
 import LoadingSpinner from '../components/LoadingSpinner' // ✅ FIX
@@ -16,10 +15,12 @@ function ProductDetails() {
 
   const [product, setProduct] = useState(null)
   const [showModal, setShowModal] = useState(false)
+  const { addToCart } = useCart()
+  const { currentUser } = useAuth()
 
   useEffect(() => {
     getProductById(id)
-      .then(res => setProduct(res.data))
+      .then(data => setProduct(data))
       .catch(err => console.error(err))
   }, [id])
 
@@ -28,7 +29,7 @@ function ProductDetails() {
     navigate('/products')
   }
 
-  // ✅ SAFE loading state
+  // loading state
   if (!product) return <LoadingSpinner />
 
   return (
@@ -45,6 +46,16 @@ function ProductDetails() {
           onClick={() => navigate(`/edit-product/${id}`)}
         >
           Edit
+        </Button>{' '}
+        {/* This puts the current product into the cart context. */}
+        <Button
+          variant="success"
+          onClick={() => {
+            if (!currentUser) return navigate('/login')
+            addToCart(product)
+          }}
+        >
+          Add to Cart
         </Button>{' '}
         <Button
           variant="danger"

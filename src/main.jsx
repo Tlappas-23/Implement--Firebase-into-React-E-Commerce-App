@@ -8,10 +8,16 @@ import './index.css'
 
 // Root component
 import App from './App'
+import { AuthProvider } from './contexts/AuthContext'
+import { CartProvider } from './contexts/CartContext'
 
 // Mount React app
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <AuthProvider>
+      <CartProvider>
+        <App />
+      </CartProvider>
+    </AuthProvider>
   </StrictMode>
 )

@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { Form, Button, Alert } from 'react-bootstrap'
-import { getProductById, updateProduct } from '../api/fakeStoreApi'
+import { getProductById, updateProduct } from '../api/products'
 
 function EditProduct() {
   const { id } = useParams()
@@ -9,11 +9,12 @@ function EditProduct() {
   const [success, setSuccess] = useState(false)
 
   useEffect(() => {
-    getProductById(id).then(res => setForm(res.data))
+    getProductById(id).then(data => setForm(data))
   }, [id])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    // Updating the Firestore product doc with the edited fields.
     await updateProduct(id, form)
     setSuccess(true)
   }
@@ -37,6 +38,27 @@ function EditProduct() {
           className="mt-2"
           value={form.price || ''}
           onChange={e => setForm({ ...form, price: e.target.value })}
+        />
+        <Form.Control
+          className="mt-2"
+          value={form.description || ''}
+          onChange={e =>
+            setForm({ ...form, description: e.target.value })
+          }
+        />
+        <Form.Control
+          className="mt-2"
+          value={form.category || ''}
+          onChange={e =>
+            setForm({ ...form, category: e.target.value })
+          }
+        />
+        <Form.Control
+          className="mt-2"
+          value={form.image || ''}
+          onChange={e =>
+            setForm({ ...form, image: e.target.value })
+          }
         />
         <Button className="mt-3" type="submit">
           Update

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Row, Col, Alert } from 'react-bootstrap'
 
-import { getAllProducts } from '../api/fakeStoreApi'
+import { getAllProducts } from '../api/products'
 import ProductCard from '../components/ProductCard'
 import LoadingSpinner from '../components/LoadingSpinner'
 
@@ -12,7 +12,7 @@ function Products() {
 
   useEffect(() => {
     getAllProducts()
-      .then(res => setProducts(res.data))
+      .then(data => setProducts(data))
       .catch(() => setError('Failed to load products'))
       .finally(() => setLoading(false))
   }, [])
