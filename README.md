@@ -1,16 +1,68 @@
-# React + Vite
+# Firebase E-Commerce App (React + Vite)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React e‑commerce app with Firebase Authentication and Firestore for product and order management.
 
-Currently, two official plugins are available:
+## Features
+- Email/password registration, login, logout
+- User profile CRUD (name, address)
+- Product CRUD (create, read, update, delete)
+- Cart with checkout
+- Order history + order detail views
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Tech Stack
+- React 19 + Vite
+- Firebase Auth + Firestore
+- React Bootstrap
 
-## React Compiler
+## Setup
+1. Install dependencies
+   ```bash
+   npm install
+   ```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+2. Create a Firebase project
+   - Enable **Authentication** (Email/Password)
+   - Enable **Firestore Database**
+   - Add a **Web App** and copy the config values
 
-## Expanding the ESLint configuration
+3. Create `.env`
+   - Copy `.env.example` to `.env`
+   - Paste your Firebase config values
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+4. (Optional) Firestore rules
+   ```rules
+   rules_version = '2';
+   service cloud.firestore {
+     match /databases/{database}/documents {
+       match /products/{productId} {
+         allow read: if true;
+         allow write: if request.auth != null;
+       }
+       match /users/{userId} {
+         allow read, write: if request.auth != null && request.auth.uid == userId;
+       }
+       match /orders/{orderId} {
+         allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+         allow read, update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
+       }
+     }
+   }
+   ```
+
+5. Seed products
+   - Use **Add Product** in the app, or
+   - Create `products` docs in Firestore manually:
+     - `title` (string)
+     - `price` (number)
+     - `description` (string)
+     - `category` (string)
+     - `image` (string URL)
+
+6. Run the app
+   ```bash
+   npm run dev
+   ```
+
+## Notes
+- Deleting an account may require a recent login (Firebase security rule).
+- Products are read from Firestore (FakeStore API is no longer used).
